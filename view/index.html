@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #heading {
+            background-color: rgb(43, 226, 195);
+            height: 70px;
+            text-align: center;
+            font-size: 200%;
+
+        }
+
+        #button-style {
+            height: 50px;
+            width: 90px;
+        }
+        .center-div{
+            text-align: center;
+        }
+    </style>
+    <script>
+        let x = 0;
+        function bulb() {
+            console.log();
+            let b = document.getElementById('light');
+            let button=document.getElementById('button-style');
+            if (x == 0) {
+                console.log(b.src);
+                b.src = "on.jpg";
+                button.innerHTML="on"
+                x = 1;
+            } else {
+                console.log(b.src);
+                b.src = "off.jpg";
+                x = 0;
+                button.innerHTML="off"
+            }
+
+
+        }
+    </script>
+</head>
+
+<body>
+    <div id="heading">My IOT Project</div>
+    <div class="center-div" >
+        <img id="light" src="./off.jpg" width="400" height="400">
+        <div style="text-align: center;"><button onclick="bulb()" id="button-style">On
+            </button>
+        </div>
+    </div>
+</body>
+
+</html>
