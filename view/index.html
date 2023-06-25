@@ -42,7 +42,8 @@
             }
         }
         async function checkStatus() {
-            const response = await fetch("https://node-mysqllite.onrender.com/switch");
+            console.log("Checking status...")
+            const response = await fetch("http://localhost:3000/switch");
             const jsonData = await response.json();
             console.log(jsonData);
         }

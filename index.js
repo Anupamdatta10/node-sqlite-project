@@ -34,7 +34,8 @@ const corsOpts = {
 //app.use(cors(corsOpts));
 app.options('*', cors());
 app.use((req,res,next)=>{
-  res.header('Access-Control-Allow-Origin', '*')
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
 } )
 app.get('/check', (req, res) => {
   res.send({ "message": "hello world" })
