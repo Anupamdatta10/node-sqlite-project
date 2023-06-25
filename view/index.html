@@ -18,7 +18,8 @@
             height: 50px;
             width: 90px;
         }
-        .center-div{
+
+        .center-div {
             text-align: center;
         }
     </style>
@@ -27,27 +28,30 @@
         function bulb() {
             console.log();
             let b = document.getElementById('light');
-            let button=document.getElementById('button-style');
+            let button = document.getElementById('button-style');
             if (x == 0) {
                 console.log(b.src);
                 b.src = "on.jpg";
-                button.innerHTML="on"
+                button.innerHTML = "on"
                 x = 1;
             } else {
                 console.log(b.src);
                 b.src = "off.jpg";
                 x = 0;
-                button.innerHTML="off"
+                button.innerHTML = "off"
             }
-
-
+        }
+        async function checkStatus() {
+            const response = await fetch("https://node-mysqllite.onrender.com/switch");
+            const jsonData = await response.json();
+            console.log(jsonData);
         }
     </script>
 </head>
 
-<body>
+<body onload="checkStatus()">
     <div id="heading">My IOT Project</div>
-    <div class="center-div" >
+    <div class="center-div">
         <img id="light" src="./off.jpg" width="400" height="400">
         <div style="text-align: center;"><button onclick="bulb()" id="button-style">On
             </button>
