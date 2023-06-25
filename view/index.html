@@ -31,17 +31,21 @@
             let b = document.getElementById('light');
             let button = document.getElementById('button-style');
             if (x == 0) {
-                console.log(b.src);
-                b.src = "on.jpg";
-                button.innerHTML = "on"
-                x = 1;
                 await onOff();
+                // console.log(b.src);
+                // b.src = "on.jpg";
+                // button.innerHTML = "on"
+                // x = 1;
+                await checkStatus() ;
+             
             } else {
-                console.log(b.src);
-                b.src = "off.jpg";
-                x = 0;
-                button.innerHTML = "off"
                 await onOff();
+                // console.log(b.src);
+                // b.src = "off.jpg";
+                // x = 0;
+                // button.innerHTML = "off"
+                await checkStatus() ;
+                
             }
         }
         async function onOff() {
@@ -62,10 +66,13 @@
             console.log(jsonData[0]["status"]);
             x = jsonData[0]["status"];
             let b = document.getElementById('light');
+            let button = document.getElementById('button-style');
             if (x == 0) {
                 b.src = "off.jpg";
+                button.innerHTML="off"
             } else {
                 b.src = "on.jpg";
+                button.innerHTML="on"
             }
           
         }
