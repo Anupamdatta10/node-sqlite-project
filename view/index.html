@@ -25,8 +25,9 @@
     </style>
     <script>
         let x = 0;
-        function bulb() {
-            console.log();
+        let url="https://node-mysqllite.onrender.com/switch"
+        async function bulb() {
+            //console.log();
             let b = document.getElementById('light');
             let button = document.getElementById('button-style');
             if (x == 0) {
@@ -34,19 +35,42 @@
                 b.src = "on.jpg";
                 button.innerHTML = "on"
                 x = 1;
+                await onOff();
             } else {
                 console.log(b.src);
                 b.src = "off.jpg";
                 x = 0;
                 button.innerHTML = "off"
+                await onOff();
             }
+        }
+        async function onOff() {
+            try{
+           let response=await fetch(url, {
+                method: 'POST'
+            })
+            const jsonData = await response.json();
+            console.log(jsonData);
+        }catch(err){
+            console.log(err)
+        }
         }
         async function checkStatus() {
             console.log("Checking status...")
-            const response = await fetch("http://localhost:3000/switch");
+            const response = await fetch(url);
             const jsonData = await response.json();
-            console.log(jsonData);
+            console.log(jsonData[0]["status"]);
+            x = jsonData[0]["status"];
+            let b = document.getElementById('light');
+            if (x == 0) {
+                b.src = "off.jpg";
+            } else {
+                b.src = "on.jpg";
+            }
+          
         }
+
+        
     </script>
 </head>
 

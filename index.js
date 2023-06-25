@@ -7,40 +7,21 @@ app.use(express.json()); // Parse JSON request bodies
 
 // You can specify a file path instead of ':memory:' for a persistent database
 
-const corsOpts = {
-  origin: '*',
-  methods: [
-      'GET',
-      'POST',
-      'PATCH',
-      'PUT',
-      'DELETE',
-      'OPTIONS'
-  ],
-  allowedHeaders: [
-      'Content-Type',
-      'Authorization',
-      'language',
-      'X-Amz-Date',
-      'X-Api-Key',
-      'X-Amz-Security-Token',
-      'X-Amz-User-Agent',
-      'Session',
-      'Accesstoken',
-      
-  ]
-};
-
+app.use(express.static(__dirname + "/view"));
 //app.use(cors(corsOpts));
 app.options('*', cors());
 app.use((req,res,next)=>{
   res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,PATCH,POST,DELETE,OPTIONS');
   next();
 } )
 app.get('/check', (req, res) => {
   res.send({ "message": "hello world" })
 })
 
+app.get('/', (req, res) => {
+  res.sendFile(__dirname+'/view/index.html');
+})
 app.get('/switch', (req, res) => {
   db.all('SELECT * FROM switch', (err, rows) => {
     if (err) {
