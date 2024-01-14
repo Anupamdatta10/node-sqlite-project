@@ -34,22 +34,28 @@ app.get('/switch', (req, res) => {
 })
 
 app.post('/switch', (req, res) => {
+ 
+  let switch_no=req.query.switch
   db.all('SELECT * FROM switch', (err, rows) => {
     if (err) {
       console.error('Error fetching users:', err);
       return res.status(500).send('Error fetching users');
     }
-    if(rows.length>0&&rows[0].status==1){
-      db.all('update switch set status=? where id=1',[0], (err, rows) => {
+   
+    if(rows.length>0&&rows[switch_no-1].status==1){
+     
+      db.all('UPDATE switch SET status = ? WHERE id = ?', [0, switch_no], (err, rows) => {
+        
         if (err) {
           console.error('Error fetching users:', err);
           return res.status(500).send('Error fetching users');
         }
-    
-        return res.json({"data":rows,"message":"light off"});
+      
+        return res.json({ "data": rows, "message": "light off" });
       });
+      
     }else{
-      db.all('update switch set status=? where id=1',[1], (err, rows) => {
+      db.all('update switch set status=? where id=?',[1,switch_no], (err, rows) => {
         if (err) {
           console.error('Error fetching users:', err);
           return res.status(500).send('Error fetching users');
