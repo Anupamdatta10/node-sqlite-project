@@ -4,9 +4,12 @@ const port = 3000;
 const db = require('./connection/connection');
 const cors = require('cors');
 app.use(express.json()); // Parse JSON request bodies
-
+var bodyParser = require('body-parser');
 // You can specify a file path instead of ':memory:' for a persistent database
+app.use(bodyParser.urlencoded({ extended: false }))
 
+// parse application/json
+app.use(bodyParser.json())
 app.use(express.static(__dirname + "/view"));
 //app.use(cors(corsOpts));
 app.options('*', cors());
@@ -15,11 +18,36 @@ app.use((req,res,next)=>{
   res.header('Access-Control-Allow-Methods', 'GET,PUT,PATCH,POST,DELETE,OPTIONS');
   next();
 } )
+
+app.get('/signin', (req, res) => {
+  res.sendFile(__dirname+'/view/login.html');
+})
 app.get('/check', (req, res) => {
   res.send({ "message": "hello world" })
 })
 
-app.get('/', (req, res) => {
+
+app.post('/login', (req, res) => {
+  let username=req.body.username;
+  let password=req.body.password;
+  console.log(username,password);
+  db.all('SELECT * FROM users WHERE email =? and password =?', [username, password], (err, rows) => {
+    if (err) {
+      console.error('Error fetching users:', err);
+      return res.status(500).send('Error fetching users');
+    }else{
+      console.log("==>>",rows);
+      if(rows.length>0){
+        res.redirect('/iot');
+        return;
+      }else{
+        res.sendFile(__dirname+'/view/login.html');
+      }
+    }
+  })
+  res.sendFile(__dirname+'/view/login.html');
+})
+app.get('/iot', (req, res) => {
   res.sendFile(__dirname+'/view/index.html');
 })
 app.get('/switch', (req, res) => {
@@ -68,6 +96,7 @@ app.post('/switch', (req, res) => {
   })
   
 })
+
 app.post('/users', (req, res) => {
   const { name, email } = req.body;
 

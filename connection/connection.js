@@ -9,11 +9,14 @@ db.on('error', (err) => {
   
 db.serialize(() => {
     // Database operations go here
-    // db.run(`CREATE TABLE IF NOT EXISTS users (
-    //   id INTEGER PRIMARY KEY AUTOINCREMENT,
-    //   name TEXT,
-    //   email TEXT
-    // )`);
+    db.run(`CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT,
+      email TEXT,
+      role TEXT, 
+      password TEXT
+
+    )`);
     db.run(`CREATE TABLE IF NOT EXISTS "switch" (
       "Id"	INTEGER,
       "status"	INTEGER,

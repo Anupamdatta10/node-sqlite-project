@@ -1,17 +1,26 @@
-#include <WiFi.h>
+#include <WiFiClientSecure.h>
 #include <HTTPClient.h>
+#include <Arduino_JSON.h>
  
 const char* ssid = "D LINK";
 const char* password =  "anupam1234";
 int buttonState = 0;
+int wifiConnectionOP=18;
+int fireSensorIP=19;
+int BuzzerOP=22;
+int relay1=21;
+int relay2=23;
+String sensorReadings;
 
 void setup() {
  
   Serial.begin(921600);
-  delay(4000);   //Delay needed before calling the WiFi.begin
-  pinMode(18,OUTPUT);
-  pinMode(22,OUTPUT);
-  pinMode(19,INPUT);
+  delay(1000);   //Delay needed before calling the WiFi.begin
+  pinMode(wifiConnectionOP,OUTPUT);
+  pinMode(BuzzerOP,OUTPUT);
+  pinMode(fireSensorIP,INPUT);
+  pinMode(relay1,OUTPUT);
+  pinMode(relay2,OUTPUT);
   WiFi.begin(ssid, password); 
  
   while (WiFi.status() != WL_CONNECTED) { //Check for the connection
@@ -19,35 +28,82 @@ void setup() {
     Serial.println("Connecting to WiFi..");
   }
   Serial.println("Connected to the WiFi network");
-  digitalWrite(18,HIGH);
+  digitalWrite(wifiConnectionOP,HIGH);
 }
 
 void loop() {
   
  if(WiFi.status()== WL_CONNECTED){   //Check WiFi connection status
+
+   String serverPath = "https://node-mysqllite.onrender.com/switch";
+
+   
+    WiFiClientSecure client;
+    HTTPClient https;
+    client.setInsecure();
+  // Your Domain name with URL path or IP address with path
+    https.begin(client, serverPath);
+    https.addHeader("Content-Type", "application/json");      
   
-   HTTPClient http;   
+     int httpResponseCode = https.GET();
   
-   http.begin("http://jsonplaceholder.typicode.com/posts");  //Specify destination for HTTP request
-   http.addHeader("Content-Type", "text/plain");             //Specify content-type header
+     String payload = "{}"; 
   
-   int httpResponseCode = http.POST("POSTING from ESP32");   //Send the actual POST request
+    if (httpResponseCode>0) {
+         Serial.print("HTTP Response code: ");
+         Serial.println(httpResponseCode);
+        payload = https.getString();
+     }
+     else {
+         Serial.print("Error code: ");
+        Serial.println(httpResponseCode);
+     }
+  // Free resources
+  https.end();
+
+  //return payload;
+    Serial.println(payload);
+    JSONVar myObject = JSON.parse(payload);
   
-   if(httpResponseCode>0){
-  
-    String response = http.getString();                       //Get the response to the request
-  
-    Serial.println(httpResponseCode);   //Print return code
-    Serial.println(response);           //Print request answer
-  
-   }else{
-  
-    Serial.print("Error on sending POST: ");
-    Serial.println(httpResponseCode);
-  
-   }
-  
-   http.end();  //Free resources
+      // JSON.typeof(jsonVar) can be used to get the type of the var
+      if (JSON.typeof(myObject) == "undefined") {
+        Serial.println("Parsing input failed!");
+        return;
+      }
+       Serial.println(myObject[0]["status"]);
+       Serial.println(myObject[0]["Id"]);
+       int x=myObject[0]["Id"];
+       if(x ==1){
+         Serial.println("=====relay1");
+         int y=myObject[0]["status"];
+        if(y==1){
+          Serial.println("=====HIGH");
+            digitalWrite(relay1, HIGH);  
+        }else{
+          Serial.println("=====LOW");
+          digitalWrite(relay1, LOW);  
+        }
+       }
+       x=myObject[1]["Id"];
+       if(x ==2){
+         Serial.println("=====relay2");
+         int y=myObject[1]["status"];
+        if(y==1){
+          Serial.println("=====HIGH");
+            digitalWrite(relay2, HIGH);  
+        }else{
+          Serial.println("=====LOW");
+          digitalWrite(relay2, LOW);  
+        }
+       }
+      // JSONVar keys = myObject.keys();
+      // for (int i = 0; i < keys.length(); i++) {
+      //   JSONVar value = myObject[keys[i]];
+      //   Serial.print(keys[i]);
+      //   Serial.print(" = ");
+      //   Serial.println(value);
+      //   //sensorReadingsArr[i] = double(value);
+      // }
   
  }else{
   
@@ -57,16 +113,17 @@ void loop() {
   
   delay(1000);  //Send a request every 10 seconds
 
- buttonState= digitalRead(19);
+ buttonState= digitalRead(fireSensorIP);
  if (buttonState == HIGH) {
     // turn LED on
    // digitalWrite(ledPin, HIGH);
     Serial.println("NOO..."); 
-    digitalWrite(22, LOW);  
+    digitalWrite(BuzzerOP, LOW);  
   } else {
     // turn LED off
-    digitalWrite(22, HIGH);
+    digitalWrite(BuzzerOP, HIGH);
     Serial.println("YES...");   
   }
   
 }
+

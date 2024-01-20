@@ -4,7 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>MY IOT PROJECT</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
     <style>
         #heading {
             background-color: rgb(43, 226, 195);
@@ -14,7 +19,12 @@
 
         }
 
-        #button-style {
+        .img-style {
+            height: 300px;
+            width: 300px;
+        }
+
+        .button-style {
             height: 50px;
             width: 90px;
         }
@@ -25,70 +35,133 @@
     </style>
     <script>
         let x = 0;
-        let url="https://node-mysqllite.onrender.com/switch"
-        async function bulb() {
-            //console.log();
+        console.log("window", window.location.href)
+        let url = `${window.location.href}switch`
+        async function bulb(e) {
+            console.log("bulb==>>", e);
             let b = document.getElementById('light');
             let button = document.getElementById('button-style');
             if (x == 0) {
-                await onOff();
+                await onOff(e);
                 // console.log(b.src);
                 // b.src = "on.jpg";
                 // button.innerHTML = "on"
                 // x = 1;
-                await checkStatus() ;
-             
+                await checkStatus();
+
             } else {
-                await onOff();
+                await onOff(e);
                 // console.log(b.src);
                 // b.src = "off.jpg";
                 // x = 0;
                 // button.innerHTML = "off"
-                await checkStatus() ;
-                
+                await checkStatus();
+
             }
         }
-        async function onOff() {
-            try{
-           let response=await fetch(url, {
-                method: 'POST'
-            })
-            const jsonData = await response.json();
-            console.log(jsonData);
-        }catch(err){
-            console.log(err)
-        }
+        async function onOff(s) {
+            try {
+                if (s == 1) {
+                    let response = await fetch(url + '?switch=1', {
+                        method: 'POST'
+                    })
+                    const jsonData = await response.json();
+                    console.log(jsonData);
+                } else {
+                    let response = await fetch(url + '?switch=2', {
+                        method: 'POST'
+                    })
+                    const jsonData = await response.json();
+                    console.log(jsonData);
+                }
+
+            } catch (err) {
+                console.log(err)
+            }
         }
         async function checkStatus() {
             console.log("Checking status...")
             const response = await fetch(url);
             const jsonData = await response.json();
-            console.log(jsonData[0]["status"]);
-            x = jsonData[0]["status"];
-            let b = document.getElementById('light');
-            let button = document.getElementById('button-style');
-            if (x == 0) {
-                b.src = "off.jpg";
-                button.innerHTML="off"
-            } else {
-                b.src = "on.jpg";
-                button.innerHTML="on"
+            console.log("===>>>", jsonData);
+            if (jsonData[0]["Id"] == 1) {
+                x=jsonData[0]['status'];
+                console.log("bulb 1 status",x)
+                let b = document.getElementById('light1');
+                let button = document.getElementById('button-style1');
+                if (x == 0) {
+                    b.src = "off.jpg";
+                    button.innerHTML = "off"
+                } else {
+                    b.src = "on.jpg";
+                    button.innerHTML = "on"
+                }
             }
-          
+
+            if (jsonData[1]["Id"] == 2) {
+                x=jsonData[1]['status'];
+                console.log("bulb 2 status",x)
+                let b = document.getElementById('light2');
+                let button = document.getElementById('button-style2');
+                if (x == 0) {
+                    b.src = "off.jpg";
+                    button.innerHTML = "off"
+                } else {
+                    b.src = "on.jpg";
+                    button.innerHTML = "on"
+                }
+            }
+            // x = jsonData[0]["status"];
+            // let b = document.getElementById('light');
+            // let button = document.getElementById('button-style');
+            // if (x == 0) {
+            //     b.src = "off.jpg";
+            //     button.innerHTML = "off"
+            // } else {
+            //     b.src = "on.jpg";
+            //     button.innerHTML = "on"
+            // }
+
         }
 
-        
+
     </script>
 </head>
 
 <body onload="checkStatus()">
     <div id="heading">My IOT Project</div>
-    <div class="center-div">
+    <div class="container ">
+        <div class="row">
+            <div class="col border m-2 p-2">
+                <div class="center-div">
+                    <div>light 1</div>
+                    <img id="light1" src="./off.jpg" class="img-style">
+                    <div style="text-align: center;">
+
+                        <button onclick="bulb(1)" class="button-style" id="button-style1">On
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col border m-2 p-2">
+                <div class="center-div">
+                    <div>light 2</div>
+                    <img id="light2" src="./off.jpg" class="img-style">
+                    <div style="text-align: center;">
+
+                        <button onclick="bulb(2)" class="button-style" id="button-style2">On
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="center-div">
         <img id="light" src="./off.jpg" width="400" height="400">
         <div style="text-align: center;"><button onclick="bulb()" id="button-style">On
             </button>
         </div>
-    </div>
+    </div> -->
 </body>
 
 </html>
