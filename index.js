@@ -4,12 +4,12 @@ const port = 3000;
 const db = require('./connection/connection');
 const cors = require('cors');
 app.use(express.json()); // Parse JSON request bodies
-var bodyParser = require('body-parser');
-// You can specify a file path instead of ':memory:' for a persistent database
-app.use(bodyParser.urlencoded({ extended: false }))
+// var bodyParser = require('body-parser');
+// // You can specify a file path instead of ':memory:' for a persistent database
+// app.use(bodyParser.urlencoded({ extended: false }))
 
 // parse application/json
-app.use(bodyParser.json())
+//app.use(bodyParser.json())
 app.use(express.static(__dirname + "/view"));
 //app.use(cors(corsOpts));
 app.options('*', cors());
