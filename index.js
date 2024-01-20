@@ -65,7 +65,7 @@ app.get('/switch', async (req, res) => {
       console.error('Error fetching users:', err);
       return res.status(500).send('Error fetching users');
     }
-    console.log("get callllll")
+    
     return res.status(200).send(rows);
   });
 })
@@ -177,6 +177,10 @@ app.get('/send-mail',async (req,res)=>{
     res.send({'message':"send"})
   }
          
+})
+
+app.get('/admin',(req,res)=>{
+  res.sendFile(__dirname + '/view/admin.html');
 })
 app.post('/users', (req, res) => {
   const { name, email } = req.body;

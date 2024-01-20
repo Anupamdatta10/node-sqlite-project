@@ -9,20 +9,32 @@
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
     <title>Document</title>
+    <style>
+        #heading {
+            background-color: rgb(43, 226, 195);
+            height: 70px;
+            text-align: center;
+            font-size: 200%;
+
+        }
+    </style>
 </head>
+
 <body>
+    <div id="heading">My IOT Project</div>
 <div class="container">
     <div class="row">
         <div class="col">
+            <div class="mb-4" >Registration form</div>
             <form>
                 <div class="mb-3">
                   <label for="exampleInputEmail1" class="form-label">Email address</label>
-                  <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                  <input type="email" class="form-control" id="username" aria-describedby="emailHelp">
                   
                 </div>
                 <div class="mb-3">
                   <label for="exampleInputPassword1" class="form-label">Password</label>
-                  <input type="password" class="form-control" id="exampleInputPassword1">
+                  <input type="password" class="form-control" id="password">
                 </div>
                 
                 <button type="submit" class="btn btn-primary">Submit</button>
@@ -30,6 +42,45 @@
         </div>
     </div>
 </div>
-    
+    <script>
+          document.querySelector('form').addEventListener('submit', async (event) => {
+
+try {
+    let url = `${window.location.origin}/register`;
+    console.log("==>>", url)
+    event.preventDefault();
+    let username = document.getElementById("username").value;
+    let password = document.getElementById("password").value;
+    const data = { username: username, password: password };
+    console.log("=form data=>>", data);
+    if (username && password) {
+        const response = await fetch(url, {
+
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+        const jsonData = await response.json();
+        console.log("jsonData==>>", jsonData)
+        if (jsonData.success) {
+            alert("Registration successfull! please login !");
+            window.location.href = "/";
+        } else {
+            alert("Invalid Username or Password");
+        }
+
+        // window.location.href = "/dashboard";
+    } else {
+        alert("Invalid Username or Password");
+    }
+} catch (e) {
+    console.log("error==>>", e)
+    alert("Invalid Username or Password");
+}
+
+})
+    </script>
 </body>
 </html>

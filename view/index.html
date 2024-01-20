@@ -57,6 +57,14 @@
             if(!isLogin){
                 window.location.href = '/signin'
             }
+            let header=document.getElementById('heading');
+            isLogin=JSON.parse(isLogin)
+            console.log("isLogin",isLogin);
+            if(isLogin.role=='admin'){
+                console.log("==header==>>>",header);
+                header.innerHTML+='<span class="float-end logout m-2"><a href="/admin">admin</a></span>'
+
+            }
             checkStatus();
         }
         async function bulb(e) {
@@ -164,7 +172,7 @@
 </head>
 
 <body onload="loginCheck()">
-    <div id="heading">My IOT Project <span class="float-end logout m-2" onclick="logout()">logout</span></div>
+    <div id="heading">My IOT Project <span class="float-end logout m-2" onclick="logout()" >logout</span></div>
     <div class="container ">
         <div class="row">
             <div class="col border m-2 p-2">
