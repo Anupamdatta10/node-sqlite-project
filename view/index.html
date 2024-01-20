@@ -32,15 +32,33 @@
         .center-div {
             text-align: center;
         }
+        .logout{
+            font-size: 20px;
+            background-color: rgb(34, 131, 155);
+            padding: 10px;
+            border-radius: 5px;
+        }
     </style>
     <script>
         let x = 0;
         console.log("window", window.location)
         let url = `${window.location.origin}/switch`;
         setInterval(() => {
-            console.log("===1=>>")
-            checkStatus();
+            //console.log("===1=>>")
+           // checkStatus();
         }, 1000);
+        async function logout(){
+            localStorage.clear();
+            window.location.href = "/signin";
+        }
+        async function loginCheck(){
+            let isLogin = localStorage.getItem("token");
+            console.log("isLogin",isLogin);
+            if(!isLogin){
+                window.location.href = '/signin'
+            }
+            checkStatus();
+        }
         async function bulb(e) {
             console.log("bulb==>>", e);
             let b = document.getElementById('light');
@@ -65,18 +83,33 @@
         }
         async function onOff(s) {
             try {
+                let token=localStorage.getItem("token")
                 if (s == 1) {
                     let response = await fetch(url + '?switch=1', {
-                        method: 'POST'
+                        method: 'POST',
+                        headers:{
+                            authorization:token
+                        }
                     })
                     const jsonData = await response.json();
-                    console.log(jsonData);
+                    console.log("11111",jsonData);
+                    if(jsonData.data&&jsonData.data=="unauthorized"){
+                        localStorage.clear();
+                        window.location.href = "/signin";
+                    }
                 } else {
                     let response = await fetch(url + '?switch=2', {
-                        method: 'POST'
+                        method: 'POST',
+                        headers:{
+                            authorization:token
+                        }
                     })
                     const jsonData = await response.json();
-                    console.log(jsonData);
+                    console.log("22222",jsonData);
+                    if(jsonData.data&&jsonData.data=="unauthorized"){
+                        localStorage.clear();
+                        window.location.href = "/signin";
+                    }
                 }
 
             } catch (err) {
@@ -87,7 +120,7 @@
             console.log("Checking status...")
             const response = await fetch(url);
             const jsonData = await response.json();
-            console.log("===>>>", jsonData);
+          //  console.log("===>>>", jsonData);
             if (jsonData[0]["Id"] == 1) {
                 x=jsonData[0]['status'];
                 console.log("bulb 1 status",x)
@@ -127,13 +160,11 @@
             // }
 
         }
-
-
     </script>
 </head>
 
-<body onload="checkStatus()">
-    <div id="heading">My IOT Project</div>
+<body onload="loginCheck()">
+    <div id="heading">My IOT Project <span class="float-end logout m-2" onclick="logout()">logout</span></div>
     <div class="container ">
         <div class="row">
             <div class="col border m-2 p-2">
