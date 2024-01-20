@@ -35,8 +35,12 @@
     </style>
     <script>
         let x = 0;
-        console.log("window", window.location.href)
-        let url = `${window.location.href}switch`
+        console.log("window", window.location)
+        let url = `${window.location.origin}/switch`;
+        setInterval(() => {
+            console.log("===1=>>")
+            checkStatus();
+        }, 1000);
         async function bulb(e) {
             console.log("bulb==>>", e);
             let b = document.getElementById('light');
