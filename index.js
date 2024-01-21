@@ -138,7 +138,7 @@ app.post('/register', (req, res) => {
     let username = req.body.username;
     let password = req.body.password;
  
-    db.all('SELECT * FROM users WHERE email =? and password =?', [username, password], (err, rows) => {
+    db.all('SELECT * FROM users WHERE email =?', [username], (err, rows) => {
       if (err) {
         console.error('Error fetching users:', err);
         return res.status(500).send('Error fetching users');
