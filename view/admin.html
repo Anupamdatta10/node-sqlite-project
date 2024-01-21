@@ -19,8 +19,55 @@
         }
         </style>
 </head>
-<body>
+<body onload="list()">
     <div id="heading">My IOT Project <span class="float-end logout m-2"><a href="/">back</a></span></div>
-    admin
+    <h1>admin panel</h1>
+    <table  class= "table table-dark table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Email</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody id="tbody">
+
+        </tbody>
+    </table>
+    <script>
+        async function list(){
+            let url = `${window.location.origin}/list`;
+            const response = await fetch(url);
+            const data = await response.json();
+            console.log(data);
+            let tbody = document.getElementById("tbody");
+            let tableData='';
+                for(let i=0;i<data.length;i++){
+                    tableData+='<tr>'
+                   // tableData+='<td>'+data[i].name+'</td>'
+                    tableData+='<td>'+data[i].email+'</td>'
+                    tableData+=`<td><button id="del-${data[i].id}" onclick="block(${data[i].id})">block</button></td></tr>`
+                }
+                // tableData+='</tr>';
+            tbody.innerHTML=tableData;
+        }
+
+        async function block(id){
+            console.log("====>>",id);
+            let url = `${window.location.origin}/update-status`;
+            let body={
+                id:id
+            }
+            const response = await fetch(url,{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+            const data = await response.json();
+            console.log(data);
+            list();
+        }
+    </script>
 </body>
 </html>

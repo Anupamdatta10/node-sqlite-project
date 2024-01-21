@@ -6,7 +6,7 @@ const cors = require('cors');
 app.use(express.json()); // Parse JSON request bodies
 var bodyParser = require('body-parser');
 require('dotenv').config();
-const {sendMail}=require('./email');
+const { sendMail } = require('./email');
 // You can specify a file path instead of ':memory:' for a persistent database
 app.use(bodyParser.urlencoded({ extended: false }))
 
@@ -32,17 +32,17 @@ app.get('/check', (req, res) => {
 app.post('/login', (req, res) => {
   try {
 
-    console.log(req.body);
+   
     let username = req.body.username;
     let password = req.body.password;
-    console.log(username, password);
+   
     db.all('SELECT * FROM users WHERE email =? and password =?', [username, password], (err, rows) => {
       if (err) {
         console.error('Error fetching users:', err);
         return res.status(500).send('Error fetching users');
       } else {
-        console.log("==>>", rows);
-        if (rows.length > 0 && rows[0].status=='active') {
+       
+        if (rows.length > 0 && rows[0].status == 'active') {
           res.status(200).send({ "token": JSON.stringify(rows[0]), "success": true, data: rows[0] });
           return;
         } else {
@@ -65,7 +65,7 @@ app.get('/switch', async (req, res) => {
       console.error('Error fetching users:', err);
       return res.status(500).send('Error fetching users');
     }
-    
+
     return res.status(200).send(rows);
   });
 })
@@ -73,16 +73,16 @@ app.get('/switch', async (req, res) => {
 app.post('/switch', (req, res) => {
   try {
 
-    //console.log("req.headers==>>", req.headers.authorization)
+  
     let user = JSON.parse(req.headers.authorization);
     db.all('select * from users where email=?', [user.email], (err, rows) => {
       if (err) {
         return res.status(200).send({ "success": false, message: "unauthorized", data: "unauthorized" })
 
       } else {
-        console.log(rows)
+      
         if (rows.length > 0 && rows[0].status != 'active') {
-          console.log("=223===>>>")
+         
           return res.status(200).send({ "success": false, message: "unauthorized", data: "unauthorized" })
         } else {
           let switch_no = req.query.switch
@@ -128,34 +128,34 @@ app.post('/switch', (req, res) => {
 
 })
 
-app.get('/register',(req,res)=>{
+app.get('/register', (req, res) => {
   res.sendFile(__dirname + '/view/register.html');
 })
-app.post('/register',(req,res)=>{
+app.post('/register', (req, res) => {
   try {
 
-    console.log(req.body);
+ 
     let username = req.body.username;
     let password = req.body.password;
-    console.log(username, password);
+ 
     db.all('SELECT * FROM users WHERE email =? and password =?', [username, password], (err, rows) => {
       if (err) {
         console.error('Error fetching users:', err);
         return res.status(500).send('Error fetching users');
       } else {
-        console.log("==>>", rows);
-        if (rows.length > 0 ) {
+        
+        if (rows.length > 0) {
           res.status(200).send({ "message": "user alread exist", "success": false });
-          
+
           return;
         } else {
-          db.run('INSERT INTO users ( email,password) VALUES (?, ?)', [ username,password], function (err) {
+          db.run('INSERT INTO users ( email,password) VALUES (?, ?)', [username, password], function (err) {
             if (err) {
               console.error('Error creating user:', err);
-              return res.status(500).send({success:false,message:"user not created successfully"});
+              return res.status(500).send({ success: false, message: "user not created successfully" });
             }
-        
-            return res.status(201).send({success:true,message:"user created successfully"});
+
+            return res.status(201).send({ success: true, message: "user created successfully" });
           });
 
           // res.status(200).send({ "token": JSON.stringify(rows[0]), "success": true, data: rows[0] });
@@ -169,18 +169,64 @@ app.post('/register',(req,res)=>{
   }
 })
 
-app.get('/send-mail',async (req,res)=>{
-  try{
-    await sendMail('neelmarik2006@gmail.com','fire alert','fire alert message!!')
-    res.send({'message':"send"})
-  }catch(e){
-    res.send({'message':"send"})
+app.get('/send-mail', async (req, res) => {
+  try {
+    sendMail('neelmarik2006@gmail.com', 'fire alert', 'fire alert message!!')
+    db.all('SELECT * FROM users where role="user" and status="active"', (err, rows) => {
+      if (err) {
+       
+        return res.status(500).send('Error fetching users');
+      } else {
+       
+        for(let i=0;i<rows.length;i++){
+          sendMail(rows[i].email, 'fire alert', 'fire alert message!! fire broke out in your home!!')
+        }
+        //return res.status(200).send(rows);
+      }
+    })
+    return res.send({ 'message': "send" })
+  } catch (e) {
+    res.send({ 'message': "send" })
   }
-         
+
 })
 
-app.get('/admin',(req,res)=>{
+app.get('/admin', (req, res) => {
   res.sendFile(__dirname + '/view/admin.html');
+})
+
+app.get('/list', (req, res) => {
+  try {
+    db.all('SELECT * FROM users where role="user" and status="active"', (err, rows) => {
+      if (err) {
+        console.error('Error fetching users:', err);
+        return res.status(500).send('Error fetching users');
+      } else {
+        return res.status(200).send(rows);
+      }
+    })
+  } catch (e) {
+    console.log(e)
+    res.status(500).send({ "message": "internal server error!!" });
+  }
+});
+
+app.post("/update-status",(req,res)=>{
+  try{
+    let user = req.body;
+    //console.log(status)
+    db.all('UPDATE users SET status ="block" where id=?', [ user.id], (err, rows) => {
+      if (err) {
+        console.error('Error fetching users:', err);
+        return res.status(500).send({ "message": 'Internal server error' });
+      }else{
+        res.send({success:true,message:"done!"})
+      }
+    })
+    }catch(e){
+      console.log(e)
+      res.status(500).send({ "message": 'Internal server error' });
+    }
 })
 app.post('/users', (req, res) => {
   const { name, email } = req.body;
