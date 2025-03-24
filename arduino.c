@@ -1,3 +1,4 @@
+#include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 #include <Arduino_JSON.h>
@@ -8,9 +9,14 @@ int buttonState = 0;
 int wifiConnectionOP=18;
 int fireSensorIP=19;
 int BuzzerOP=22;
+int acDetection1=26;
+int acDetection2=27;
+int acStatus1=0;
+int acStatus2=0;
 int relay1=21;
 int relay2=23;
 String sensorReadings;
+
 
 void setup() {
  
@@ -21,6 +27,9 @@ void setup() {
   pinMode(fireSensorIP,INPUT);
   pinMode(relay1,OUTPUT);
   pinMode(relay2,OUTPUT);
+  pinMode(acDetection1,INPUT);
+  pinMode(acDetection2,INPUT);
+
   WiFi.begin(ssid, password); 
  
   while (WiFi.status() != WL_CONNECTED) { //Check for the connection
@@ -35,7 +44,7 @@ void loop() {
   
  if(WiFi.status()== WL_CONNECTED){   //Check WiFi connection status
 
-   String serverPath = "https://node-mysqllite.onrender.com/switch";
+   String serverPath = "https://iot-project-fax3.onrender.com/switch";
 
    
     WiFiClientSecure client;
@@ -112,7 +121,54 @@ void loop() {
  }
   
   delay(1000);  //Send a request every 10 seconds
+ acStatus1=digitalRead(acDetection1);
+  Serial.println("ac detedt=====>strat");
+  Serial.println(acStatus1);
+    if(WiFi.status()== WL_CONNECTED){
+      Serial.print("- x :1 ");
+      String serverEmailPath = "http://localhost:3000/status-update?x="+acStatus1; 
+      WiFiClientSecure client;
+      HTTPClient https;
+      client.setInsecure();
+  // Your Domain name with URL path or IP address with path
+      https.begin(client, serverEmailPath);
+      https.addHeader("Content-Type", "application/json");      
+  
+      int httpResponseCode = https.GET();
+      if (httpResponseCode>0) {
+         Serial.print("HTTP Response code fire alarm: ");
+         Serial.println(httpResponseCode);
+        //payload = https.getString();
+     }
+     else {
+         Serial.print("Error code:fire alarm ");
+        Serial.println(httpResponseCode);
+     }
+    }
 
+    if(WiFi.status()== WL_CONNECTED){
+      Serial.print("- y:2 ");
+      String serverEmailPath = "http://localhost:3000/status-update?y="+acStatus2; 
+      WiFiClientSecure client;
+      HTTPClient https;
+      client.setInsecure();
+  // Your Domain name with URL path or IP addrekss with path
+      https.begin(client, serverEmailPath);
+      https.addHeader("Content-Type", "application/json");      
+  
+      int httpResponseCode = https.GET();
+      if (httpResponseCode>0) {
+         Serial.print("HTTP Response code fire alarm: ");
+         Serial.println(httpResponseCode);
+        //payload = https.getString();
+     }
+     else {
+         Serial.print("Error code:fire alarm ");
+        Serial.println(httpResponseCode);
+     }
+    }
+
+  Serial.println("ac detedt=====>end");
  buttonState= digitalRead(fireSensorIP);
  if (buttonState == HIGH) {
     // turn LED on
@@ -123,6 +179,27 @@ void loop() {
     // turn LED off
     digitalWrite(BuzzerOP, HIGH);
     Serial.println("YES...");   
+    if(WiFi.status()== WL_CONNECTED){
+      Serial.print("- fire alarm: ");
+      String serverEmailPath = "https://iot-project-fax3.onrender.com/send-mail"; 
+      WiFiClientSecure client;
+      HTTPClient https;
+      client.setInsecure();
+  // Your Domain name with URL path or IP address with path
+      https.begin(client, serverEmailPath);
+      https.addHeader("Content-Type", "application/json");      
+  
+      int httpResponseCode = https.GET();
+      if (httpResponseCode>0) {
+         Serial.print("HTTP Response code fire alarm: ");
+         Serial.println(httpResponseCode);
+        //payload = https.getString();
+     }
+     else {
+         Serial.print("Error code:fire alarm ");
+        Serial.println(httpResponseCode);
+     }
+    }
   }
   
 }

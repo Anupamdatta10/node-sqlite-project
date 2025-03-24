@@ -28,6 +28,39 @@ app.get('/check', (req, res) => {
   res.send({ "message": "hello world" })
 })
 
+app.get('/status-update', (req, res) => {
+  const { x, y } = req.query;
+
+  let query = '';
+  let params = [];
+
+  if (x !== undefined) {
+    query = 'UPDATE switch SET status = ? WHERE id = 1';
+    params = [x];
+  } else if (y !== undefined) {
+    query = 'UPDATE switch SET status = ? WHERE id = 2';
+    params = [y];
+  } else {
+    return res.status(400).send('Either x or y query parameter is required');
+  }
+
+  db.run(query, params, function (err) {
+    if (err) {
+      console.error('Error updating status:', err);
+      return res.status(500).send('Error updating status');
+    }
+
+    db.all('SELECT * FROM switch', (err, rows) => {
+      if (err) {
+        console.error('Error fetching data:', err);
+        return res.status(500).send('Error fetching data');
+      }
+      res.send({ "status": rows });
+    });
+  });
+});
+
+
 
 app.post('/login', (req, res) => {
   try {
