@@ -32,6 +32,9 @@ app.get('/status-update', (req, res) => {
   let { x, y } = req.query;
   let queries = [];
   let params = [];
+  console.log("======x===>",x);
+  console.log("======y===>",y);
+
 
   if (x !== undefined) {
    x= x==''?0:x
