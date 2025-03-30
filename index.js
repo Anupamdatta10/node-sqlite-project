@@ -29,7 +29,7 @@ app.get('/check', (req, res) => {
 })
 
 app.get('/status-update', (req, res) => {
-  const { x, y } = req.query;
+  let { x, y } = req.query;
   let queries = [];
   let params = [];
 
