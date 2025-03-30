@@ -34,10 +34,13 @@ app.get('/status-update', (req, res) => {
   let params = [];
 
   if (x !== undefined) {
+    x==''?0:x
     queries.push({ query: 'UPDATE switch SET status = ? WHERE id = 1', param: x });
   }
   
   if (y !== undefined) {
+    console.log('y====>>',y==''?0:y)
+    y==''?0:y
     queries.push({ query: 'UPDATE switch SET status = ? WHERE id = 2', param: y });
   }
 
