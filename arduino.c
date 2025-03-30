@@ -122,11 +122,12 @@ void loop() {
   
   delay(1000);  //Send a request every 10 seconds
  acStatus1=digitalRead(acDetection1);
+ acStatus2=digitalRead(acDetection2);
   Serial.println("ac detedt=====>strat");
   Serial.println(acStatus1);
     if(WiFi.status()== WL_CONNECTED){
       Serial.print("- x :1 ");
-      String serverEmailPath = "http://localhost:3000/status-update?x="+acStatus1; 
+      String serverEmailPath = "https://iot-project-fax3.onrender.com/status-update?x="+acStatus1; 
       WiFiClientSecure client;
       HTTPClient https;
       client.setInsecure();
@@ -138,7 +139,8 @@ void loop() {
       if (httpResponseCode>0) {
          Serial.print("HTTP Response code fire alarm: ");
          Serial.println(httpResponseCode);
-        //payload = https.getString();
+         payload = https.getString();
+         Serial.println(payload);
      }
      else {
          Serial.print("Error code:fire alarm ");
@@ -146,61 +148,61 @@ void loop() {
      }
     }
 
-    if(WiFi.status()== WL_CONNECTED){
-      Serial.print("- y:2 ");
-      String serverEmailPath = "http://localhost:3000/status-update?y="+acStatus2; 
-      WiFiClientSecure client;
-      HTTPClient https;
-      client.setInsecure();
-  // Your Domain name with URL path or IP addrekss with path
-      https.begin(client, serverEmailPath);
-      https.addHeader("Content-Type", "application/json");      
+  //   if(WiFi.status()== WL_CONNECTED){
+  //     Serial.print("- y:2 ");
+  //     String serverEmailPath = "https://iot-project-fax3.onrender.com/status-update?y="+acStatus2; 
+  //     WiFiClientSecure client;
+  //     HTTPClient https;
+  //     client.setInsecure();
+  // // Your Domain name with URL path or IP addrekss with path
+  //     https.begin(client, serverEmailPath);
+  //     https.addHeader("Content-Type", "application/json");      
   
-      int httpResponseCode = https.GET();
-      if (httpResponseCode>0) {
-         Serial.print("HTTP Response code fire alarm: ");
-         Serial.println(httpResponseCode);
-        //payload = https.getString();
-     }
-     else {
-         Serial.print("Error code:fire alarm ");
-        Serial.println(httpResponseCode);
-     }
-    }
+  //     int httpResponseCode = https.GET();
+  //     if (httpResponseCode>0) {
+  //        Serial.print("HTTP Response code fire alarm: ");
+  //        Serial.println(httpResponseCode);
+  //       //payload = https.getString();
+  //    }
+  //    else {
+  //        Serial.print("Error code:fire alarm ");
+  //       Serial.println(httpResponseCode);
+  //    }
+  //   }
 
   Serial.println("ac detedt=====>end");
- buttonState= digitalRead(fireSensorIP);
- if (buttonState == HIGH) {
-    // turn LED on
-   // digitalWrite(ledPin, HIGH);
-    Serial.println("NOO..."); 
-    digitalWrite(BuzzerOP, LOW);  
-  } else {
-    // turn LED off
-    digitalWrite(BuzzerOP, HIGH);
-    Serial.println("YES...");   
-    if(WiFi.status()== WL_CONNECTED){
-      Serial.print("- fire alarm: ");
-      String serverEmailPath = "https://iot-project-fax3.onrender.com/send-mail"; 
-      WiFiClientSecure client;
-      HTTPClient https;
-      client.setInsecure();
-  // Your Domain name with URL path or IP address with path
-      https.begin(client, serverEmailPath);
-      https.addHeader("Content-Type", "application/json");      
+//  buttonState= digitalRead(fireSensorIP);
+//  if (buttonState == HIGH) {
+//     // turn LED on
+//    // digitalWrite(ledPin, HIGH);
+//     Serial.println("NOO..."); 
+//     digitalWrite(BuzzerOP, LOW);  
+//   } else {
+//     // turn LED off
+//     digitalWrite(BuzzerOP, HIGH);
+//     Serial.println("YES...");   
+//     if(WiFi.status()== WL_CONNECTED){
+//       Serial.print("- fire alarm: ");
+//       String serverEmailPath = "https://iot-project-fax3.onrender.com/send-mail"; 
+//       WiFiClientSecure client;
+//       HTTPClient https;
+//       client.setInsecure();
+//   // Your Domain name with URL path or IP address with path
+//       https.begin(client, serverEmailPath);
+//       https.addHeader("Content-Type", "application/json");      
   
-      int httpResponseCode = https.GET();
-      if (httpResponseCode>0) {
-         Serial.print("HTTP Response code fire alarm: ");
-         Serial.println(httpResponseCode);
-        //payload = https.getString();
-     }
-     else {
-         Serial.print("Error code:fire alarm ");
-        Serial.println(httpResponseCode);
-     }
-    }
-  }
+//       int httpResponseCode = https.GET();
+//       if (httpResponseCode>0) {
+//          Serial.print("HTTP Response code fire alarm: ");
+//          Serial.println(httpResponseCode);
+//         //payload = https.getString();
+//      }
+//      else {
+//          Serial.print("Error code:fire alarm ");
+//         Serial.println(httpResponseCode);
+//      }
+//     }
+//   }
   
 }
 

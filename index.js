@@ -30,35 +30,57 @@ app.get('/check', (req, res) => {
 
 app.get('/status-update', (req, res) => {
   const { x, y } = req.query;
-
-  let query = '';
+  let queries = [];
   let params = [];
 
   if (x !== undefined) {
-    query = 'UPDATE switch SET status = ? WHERE id = 1';
-    params = [x];
-  } else if (y !== undefined) {
-    query = 'UPDATE switch SET status = ? WHERE id = 2';
-    params = [y];
-  } else {
-    return res.status(400).send('Either x or y query parameter is required');
+    queries.push({ query: 'UPDATE switch SET status = ? WHERE id = 1', param: x });
+  }
+  
+  if (y !== undefined) {
+    queries.push({ query: 'UPDATE switch SET status = ? WHERE id = 2', param: y });
   }
 
-  db.run(query, params, function (err) {
-    if (err) {
-      console.error('Error updating status:', err);
-      return res.status(500).send('Error updating status');
-    }
-
-    db.all('SELECT * FROM switch', (err, rows) => {
-      if (err) {
-        console.error('Error fetching data:', err);
-        return res.status(500).send('Error fetching data');
-      }
-      res.send({ "status": rows });
+  if (queries.length > 0) {
+    db.serialize(() => {
+      const stmt = db.prepare(queries[0].query);
+      stmt.run(queries[0].param, function (err) {
+        if (err) {
+          console.error('Error updating status:', err);
+          return res.status(500).send('Error updating status');
+        }
+        
+        if (queries.length > 1) {
+          const stmt2 = db.prepare(queries[1].query);
+          stmt2.run(queries[1].param, function (err) {
+            if (err) {
+              console.error('Error updating status:', err);
+              return res.status(500).send('Error updating status');
+            }
+            fetchUpdatedStatus(res);
+          });
+        } else {
+          fetchUpdatedStatus(res);
+        }
+      });
     });
-  });
+  } else {
+    fetchUpdatedStatus(res);
+  }
 });
+
+function fetchUpdatedStatus(res) {
+  db.all('SELECT * FROM switch', (err, rows) => {
+    if (err) {
+      console.error('Error fetching data:', err);
+      return res.status(500).send('Error fetching data');
+    }
+    console.log('rows========>>', rows);
+    res.send({ status: rows });
+  });
+}
+
+
 
 
 
@@ -105,8 +127,6 @@ app.get('/switch', async (req, res) => {
 
 app.post('/switch', (req, res) => {
   try {
-
-  
     let user = JSON.parse(req.headers.authorization);
     db.all('select * from users where email=?', [user.email], (err, rows) => {
       if (err) {
