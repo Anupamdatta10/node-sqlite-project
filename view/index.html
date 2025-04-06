@@ -129,33 +129,33 @@
             const response = await fetch(url);
             const jsonData = await response.json();
           //  console.log("===>>>", jsonData);
-            if (jsonData[0]["Id"] == 1) {
-                x=jsonData[0]['status'];
-                console.log("bulb 1 status",x)
-                let b = document.getElementById('light1');
-                let button = document.getElementById('button-style1');
-                if (x == 0) {
-                    b.src = "off.jpg";
-                    button.innerHTML = "off"
-                } else {
-                    b.src = "on.jpg";
-                    button.innerHTML = "on"
-                }
-            }
+            // if (jsonData[0]["Id"] == 1) {
+            //     x=jsonData[0]['status'];
+            //     console.log("bulb 1 status",x)
+            //     let b = document.getElementById('light1');
+            //     let button = document.getElementById('button-style1');
+            //     if (x == 0) {
+            //         b.src = "off.jpg";
+            //         button.innerHTML = "off"
+            //     } else {
+            //         b.src = "on.jpg";
+            //         button.innerHTML = "on"
+            //     }
+            // }
 
-            if (jsonData[1]["Id"] == 2) {
-                x=jsonData[1]['status'];
-                console.log("bulb 2 status",x)
-                let b = document.getElementById('light2');
-                let button = document.getElementById('button-style2');
-                if (x == 0) {
-                    b.src = "off.jpg";
-                    button.innerHTML = "off"
-                } else {
-                    b.src = "on.jpg";
-                    button.innerHTML = "on"
-                }
-            }
+            // if (jsonData[1]["Id"] == 2) {
+            //     x=jsonData[1]['status'];
+            //     console.log("bulb 2 status",x)
+            //     let b = document.getElementById('light2');
+            //     let button = document.getElementById('button-style2');
+            //     if (x == 0) {
+            //        // b.src = "off.jpg";
+            //         button.innerHTML = "off"
+            //     } else {
+            //        // b.src = "on.jpg";
+            //         button.innerHTML = "on"
+            //     }
+            // }
             // x = jsonData[0]["status"];
             // let b = document.getElementById('light');
             // let button = document.getElementById('button-style');
@@ -178,10 +178,10 @@
             <div class="col border m-2 p-2">
                 <div class="center-div">
                     <div>light 1</div>
-                    <img id="light1" src="./off.jpg" class="img-style">
+                    <!-- <img id="light1" src="./off.jpg" class="img-style"> -->
                     <div style="text-align: center;">
 
-                        <button onclick="bulb(1)" class="button-style" id="button-style1">On
+                        <button onclick="bulb(1)" class="button-style" id="button-style1">Switch1
                         </button>
                     </div>
                 </div>
@@ -189,10 +189,10 @@
             <div class="col border m-2 p-2">
                 <div class="center-div">
                     <div>light 2</div>
-                    <img id="light2" src="./off.jpg" class="img-style">
+                    <!-- <img id="light2" src="./off.jpg" class="img-style"> -->
                     <div style="text-align: center;">
 
-                        <button onclick="bulb(2)" class="button-style" id="button-style2">On
+                        <button onclick="bulb(2)" class="button-style" id="button-style2">Switch2
                         </button>
                     </div>
                 </div>
