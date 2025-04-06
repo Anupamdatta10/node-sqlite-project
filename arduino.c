@@ -215,38 +215,38 @@ void loop() {
 
 
   Serial.println("ac detedt=====>end");
-//  buttonState= digitalRead(fireSensorIP);
-//  if (buttonState == HIGH) {
-//     // turn LED on
-//    // digitalWrite(ledPin, HIGH);
-//     Serial.println("NOO..."); 
-//     digitalWrite(BuzzerOP, LOW);  
-//   } else {
-//     // turn LED off
-//     digitalWrite(BuzzerOP, HIGH);
-//     Serial.println("YES...");   
-//     if(WiFi.status()== WL_CONNECTED){
-//       Serial.print("- fire alarm: ");
-//       String serverEmailPath = "https://iot-project-fax3.onrender.com/send-mail"; 
-//       WiFiClientSecure client;
-//       HTTPClient https;
-//       client.setInsecure();
-//   // Your Domain name with URL path or IP address with path
-//       https.begin(client, serverEmailPath);
-//       https.addHeader("Content-Type", "application/json");      
+ buttonState= digitalRead(fireSensorIP);
+ if (buttonState == HIGH) {
+    // turn LED on
+   // digitalWrite(ledPin, HIGH);
+    Serial.println("NOO..."); 
+    digitalWrite(BuzzerOP, LOW);  
+  } else {
+    // turn LED off
+    digitalWrite(BuzzerOP, HIGH);
+    Serial.println("YES...");   
+    if(WiFi.status()== WL_CONNECTED){
+      Serial.print("- fire alarm: ");
+      String serverEmailPath = "https://iot-project-fax3.onrender.com/send-mail"; 
+      WiFiClientSecure client;
+      HTTPClient https;
+      client.setInsecure();
+  // Your Domain name with URL path or IP address with path
+      https.begin(client, serverEmailPath);
+      https.addHeader("Content-Type", "application/json");      
   
-//       int httpResponseCode = https.GET();
-//       if (httpResponseCode>0) {
-//          Serial.print("HTTP Response code fire alarm: ");
-//          Serial.println(httpResponseCode);
-//         //payload = https.getString();
-//      }
-//      else {
-//          Serial.print("Error code:fire alarm ");
-//         Serial.println(httpResponseCode);
-//      }
-//     }
-//   }
+      int httpResponseCode = https.GET();
+      if (httpResponseCode>0) {
+         Serial.print("HTTP Response code fire alarm: ");
+         Serial.println(httpResponseCode);
+        //payload = https.getString();
+     }
+     else {
+         Serial.print("Error code:fire alarm ");
+        Serial.println(httpResponseCode);
+     }
+    }
+  }
   
 }
 

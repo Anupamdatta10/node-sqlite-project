@@ -230,7 +230,7 @@ app.post('/register', (req, res) => {
 
 app.get('/send-mail', async (req, res) => {
   try {
-    sendMail('neelmarik2006@gmail.com', 'fire alert', 'fire alert message!!')
+    sendMail('neelmarik26@gmail.com', 'fire alert', 'fire alert message!!')
     db.all('SELECT * FROM users where role="user" and status="active"', (err, rows) => {
       if (err) {
        
