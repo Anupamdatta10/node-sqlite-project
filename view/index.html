@@ -11,28 +11,74 @@
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
     <style>
+        body {
+            background-color: #121212;
+            color: white;
+        }
+
         #heading {
             background-color: rgb(43, 226, 195);
             height: 70px;
             text-align: center;
             font-size: 200%;
-
         }
 
-        .img-style {
-            height: 300px;
-            width: 300px;
+        .switch {
+            position: relative;
+            width: 80px;
+            height: 44px;
+            margin: 10px auto;
         }
 
-        .button-style {
-            height: 50px;
-            width: 90px;
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            pointer-events: none;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #333;
+            border-radius: 50px;
+            transition: background-color 0.4s;
+            box-shadow: 0 0 5px #0f0 inset;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 36px;
+            width: 36px;
+            left: 4px;
+            bottom: 4px;
+            background-color: #0f0;
+            border-radius: 50%;
+            transition: transform 0.4s;
+            box-shadow: 0 0 15px #0f0;
+        }
+
+        input:checked + .slider {
+            background-color: #1a1a1a;
+            box-shadow: 0 0 10px #0f0;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(36px);
+            background-color: #0f0;
+            box-shadow: 0 0 20px #0f0, 0 0 10px #0f0 inset;
         }
 
         .center-div {
             text-align: center;
         }
-        .logout{
+
+        .logout {
             font-size: 20px;
             background-color: rgb(34, 131, 155);
             padding: 10px;
@@ -43,168 +89,95 @@
         let x = 0;
         console.log("window", window.location)
         let url = `${window.location.origin}/switch`;
-        setInterval(() => {
-            //console.log("===1=>>")
-            checkStatus();
-        }, 1000);
-        async function logout(){
+        // setInterval(() => {
+        //     checkStatus();
+        // }, 1000);
+
+        async function logout() {
             localStorage.clear();
             window.location.href = "/signin";
         }
-        async function loginCheck(){
+
+        async function loginCheck() {
             let isLogin = localStorage.getItem("token");
-            console.log("isLogin",isLogin);
-            if(!isLogin){
+            console.log("isLogin", isLogin);
+            if (!isLogin) {
                 window.location.href = '/signin'
             }
-            let header=document.getElementById('heading');
-            isLogin=JSON.parse(isLogin)
-            console.log("isLogin",isLogin);
-            if(isLogin.role=='admin'){
-                console.log("==header==>>>",header);
-                header.innerHTML+='<span class="float-end logout m-2"><a href="/admin">admin</a></span>'
-
+            let header = document.getElementById('heading');
+            isLogin = JSON.parse(isLogin)
+            console.log("isLogin", isLogin);
+            if (isLogin.role == 'admin') {
+                console.log("==header==>>>", header);
+                header.innerHTML += '<span class="float-end logout m-2"><a href="/admin">admin</a></span>'
             }
             checkStatus();
         }
+
         async function bulb(e) {
             console.log("bulb==>>", e);
-            let b = document.getElementById('light');
-            let button = document.getElementById('button-style');
-            if (x == 0) {
-                await onOff(e);
-                // console.log(b.src);
-                // b.src = "on.jpg";
-                // button.innerHTML = "on"
-                // x = 1;
-                await checkStatus();
-
-            } else {
-                await onOff(e);
-                // console.log(b.src);
-                // b.src = "off.jpg";
-                // x = 0;
-                // button.innerHTML = "off"
-                await checkStatus();
-
+            if (navigator.vibrate) {
+                navigator.vibrate(100);
             }
+            let switchInput = document.getElementById(`switch${e}`);
+            switchInput.checked = !switchInput.checked;
+            await onOff(e);
+           
         }
+
         async function onOff(s) {
             try {
-                let token=localStorage.getItem("token")
-                if (s == 1) {
-                    let response = await fetch(url + '?switch=1', {
-                        method: 'POST',
-                        headers:{
-                            authorization:token
-                        }
-                    })
-                    const jsonData = await response.json();
-                    console.log("11111",jsonData);
-                    if(jsonData.data&&jsonData.data=="unauthorized"){
-                        localStorage.clear();
-                        window.location.href = "/signin";
+                let token = localStorage.getItem("token")
+                let response = await fetch(url + `?switch=${s}`, {
+                    method: 'POST',
+                    headers: {
+                        authorization: token
                     }
-                } else {
-                    let response = await fetch(url + '?switch=2', {
-                        method: 'POST',
-                        headers:{
-                            authorization:token
-                        }
-                    })
-                    const jsonData = await response.json();
-                    console.log("22222",jsonData);
-                    if(jsonData.data&&jsonData.data=="unauthorized"){
-                        localStorage.clear();
-                        window.location.href = "/signin";
-                    }
+                });
+                const jsonData = await response.json();
+                console.log("Response:", jsonData);
+                if (jsonData.data && jsonData.data == "unauthorized") {
+                    localStorage.clear();
+                    window.location.href = "/signin";
                 }
-
             } catch (err) {
                 console.log(err)
             }
         }
+
         async function checkStatus() {
             console.log("Checking status...")
             const response = await fetch(url);
             const jsonData = await response.json();
-          //  console.log("===>>>", jsonData);
-            // if (jsonData[0]["Id"] == 1) {
-            //     x=jsonData[0]['status'];
-            //     console.log("bulb 1 status",x)
-            //     let b = document.getElementById('light1');
-            //     let button = document.getElementById('button-style1');
-            //     if (x == 0) {
-            //         b.src = "off.jpg";
-            //         button.innerHTML = "off"
-            //     } else {
-            //         b.src = "on.jpg";
-            //         button.innerHTML = "on"
-            //     }
-            // }
-
-            // if (jsonData[1]["Id"] == 2) {
-            //     x=jsonData[1]['status'];
-            //     console.log("bulb 2 status",x)
-            //     let b = document.getElementById('light2');
-            //     let button = document.getElementById('button-style2');
-            //     if (x == 0) {
-            //        // b.src = "off.jpg";
-            //         button.innerHTML = "off"
-            //     } else {
-            //        // b.src = "on.jpg";
-            //         button.innerHTML = "on"
-            //     }
-            // }
-            // x = jsonData[0]["status"];
-            // let b = document.getElementById('light');
-            // let button = document.getElementById('button-style');
-            // if (x == 0) {
-            //     b.src = "off.jpg";
-            //     button.innerHTML = "off"
-            // } else {
-            //     b.src = "on.jpg";
-            //     button.innerHTML = "on"
-            // }
-
+            console.log("Status:", jsonData);
         }
     </script>
 </head>
 
 <body onload="loginCheck()">
-    <div id="heading">My IOT Project <span class="float-end logout m-2" onclick="logout()" >logout</span></div>
-    <div class="container ">
+    <div id="heading">My IOT Project <span class="float-end logout m-2" onclick="logout()">logout</span></div>
+    <div class="container">
         <div class="row">
             <div class="col border m-2 p-2">
                 <div class="center-div">
                     <div>light 1</div>
-                    <!-- <img id="light1" src="./off.jpg" class="img-style"> -->
-                    <div style="text-align: center;">
-
-                        <button onclick="bulb(1)" class="button-style" id="button-style1">Switch1
-                        </button>
+                    <div class="switch">
+                        <input type="checkbox" id="switch1" onclick="bulb(1)">
+                        <span class="slider"></span>
                     </div>
                 </div>
             </div>
             <div class="col border m-2 p-2">
                 <div class="center-div">
                     <div>light 2</div>
-                    <!-- <img id="light2" src="./off.jpg" class="img-style"> -->
-                    <div style="text-align: center;">
-
-                        <button onclick="bulb(2)" class="button-style" id="button-style2">Switch2
-                        </button>
+                    <div class="switch">
+                        <input type="checkbox" id="switch2" onclick="bulb(2)">
+                        <span class="slider"></span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- <div class="center-div">
-        <img id="light" src="./off.jpg" width="400" height="400">
-        <div style="text-align: center;"><button onclick="bulb()" id="button-style">On
-            </button>
-        </div>
-    </div> -->
 </body>
 
 </html>
