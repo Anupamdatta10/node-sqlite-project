@@ -92,6 +92,9 @@
             localStorage.clear();
             window.location.href = "/signin";
         }
+        setInterval(() => {
+            checkStatus();
+        }, 1000);
 
         async function loginCheck() {
             let isLogin = localStorage.getItem("token");
@@ -108,7 +111,6 @@
         }
 
         async function bulb(e) {
-            console.log("bulb==>>", e);
             if (navigator.vibrate) {
                 navigator.vibrate(100);
             }
@@ -141,7 +143,25 @@
             try {
                 const response = await fetch(url);
                 const jsonData = await response.json();
-                console.log("Status:", jsonData);
+                if (jsonData[0]["Id"] == 1) {
+                x=jsonData[0]['status'];
+                let b = document.getElementById('switch1');
+                if (x == 0) {
+                    b.checked = false;
+                } else {
+                    b.checked = true;
+                }
+            }
+
+            if (jsonData[1]["Id"] == 2) {
+                x=jsonData[1]['status'];
+                let b = document.getElementById('switch2');
+                if (x == 0) {
+                    b.checked = false;
+                } else {
+                    b.checked = true;
+                }
+            }
             } catch (error) {
                 console.error("Error fetching status:", error);
             }
